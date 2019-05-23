@@ -740,6 +740,7 @@ def _execute(db, to_run, interactive=True, commit=True):
         )
         print()
       if not commit:
+        print("The issue lies here " + str(commit))
         txn.rollback()
   except Exception as e:
     print()
