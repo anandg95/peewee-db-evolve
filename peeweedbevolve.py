@@ -726,11 +726,16 @@ def evolve(db, interactive=True, ignore_tables=None):
 def _execute(db, to_run, interactive=True, commit=True):
   if interactive: print()
   try:
-    with db.atomic() as txn:
+    with db.transaction() as txn:
       for sql, params in to_run:
         if interactive or DEBUG: print_sql(' %s; %s' % (sql, params or ''))
         if sql.strip().startswith('--'): continue
-        db.execute_sql(sql, params)
+        try:
+          db.execute_sql(sql, params)
+          txn.commit()
+        except Exception as e:
+          print("Peewee-db-evolve migration exception for sql, params : ", sql, params)
+          print(e)
       if interactive:
         print()
         print(
@@ -740,7 +745,6 @@ def _execute(db, to_run, interactive=True, commit=True):
         )
         print()
       if not commit:
-        print("The issue lies here " + str(commit))
         txn.rollback()
   except Exception as e:
     print()
