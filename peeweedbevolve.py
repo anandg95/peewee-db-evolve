@@ -661,6 +661,9 @@ def calc_changes(db, ignore_tables=None):
     to_run += alter_statements
     rename_cols_by_table[ntn] = renames
     deleted_cols_by_table[ntn] = deletes
+  
+  for item in ignore_tables:
+    del table_names_to_models[item]
 
   for ntn, model in table_names_to_models.items():
     etn = table_renamed_from.get(ntn, ntn)
